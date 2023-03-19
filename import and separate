@@ -1,0 +1,90 @@
+import csv
+import os
+from collections import defaultdict
+
+def csv_to_dict(file_path):
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}")
+        return []
+
+    data = []
+    try:
+        with open(file_path, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                data.append(row)
+    except Exception as e:
+        print(f"Error reading file {file_path}: {e}")
+    return data
+
+file_path1 = 'F:\Accounting Python\intern coding\og tax.csv'
+file_path2 = 'F:\Accounting Python\intern coding\OG accounting.csv'
+
+dict1 = csv_to_dict(file_path1)
+dict2 = csv_to_dict(file_path2)
+
+if dict1:
+
+    # Pad AssetID with zeros to make it 7 characters long
+    for row in dict1:
+        row['AssetID'] = row['AssetID'].zfill(7)
+
+    # Group data by AssetID
+    data_by_asset_id = defaultdict(list)
+    for row in dict1:
+        asset_id = row['AssetID']
+        data_by_asset_id[asset_id].append(row)
+
+# Set the output folder
+    output_folder = "F:\\Accounting Python\\intern coding\\tax separation"  # Change this to your desired location
+
+# Automatically get fieldnames from the first row of data
+    fieldnames = list(dict1[0].keys()) if dict1 else []
+
+# Create a CSV file for each unique AssetID
+    for asset_id, asset_data in data_by_asset_id.items():
+        file_name = f"{asset_id}.csv"
+        file_path = os.path.join(output_folder, file_name)
+
+        with open(file_path, mode='w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in asset_data:
+                writer.writerow(row)
+
+        print(f"Created {file_path}")
+else:
+    print("No data found in file1.csv")
+
+if dict2:
+
+    # Pad AssetID with zeros to make it 7 characters long
+    for row in dict2:
+        row['SecID'] = row['SecID'].zfill(7)
+
+    # Group data by AssetID
+    data_by_asset_id = defaultdict(list)
+    for row in dict2:
+        asset_id = row['SecID']
+        data_by_asset_id[asset_id].append(row)
+
+# Set the output folder
+    output_folder = "F:\\Accounting Python\\intern coding\\accounting separation"  # Change this to your desired location
+
+# Automatically get fieldnames from the first row of data
+    fieldnames = list(dict2[0].keys()) if dict1 else []
+
+# Create a CSV file for each unique AssetID
+    for asset_id, asset_data in data_by_asset_id.items():
+        file_name = f"{asset_id}.csv"
+        file_path = os.path.join(output_folder, file_name)
+
+        with open(file_path, mode='w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in asset_data:
+                writer.writerow(row)
+
+        print(f"Created {file_path}")
+else:
+    print("No data found in file2.csv")
